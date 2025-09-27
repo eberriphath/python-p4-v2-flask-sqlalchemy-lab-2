@@ -9,13 +9,15 @@ class TestSerialization:
         '''customer is serializable'''
         with app.app_context():
             c = Customer(name='Phil')
-            db.session.add(c)
+            i = Item(name='Insulated Mug', price=9.99)
+            db.session.add_all([c, i])
             db.session.commit()
-            r = Review(comment='great!', customer=c)
+
+            r = Review(comment='great!', customer=c, item=i)
             db.session.add(r)
             db.session.commit()
-            customer_dict = c.to_dict()
 
+            customer_dict = c.to_dict()
             assert customer_dict['id']
             assert customer_dict['name'] == 'Phil'
             assert customer_dict['reviews']
@@ -25,9 +27,11 @@ class TestSerialization:
         '''item is serializable'''
         with app.app_context():
             i = Item(name='Insulated Mug', price=9.99)
-            db.session.add(i)
+            c = Customer(name='Phil')
+            db.session.add_all([c, i])
             db.session.commit()
-            r = Review(comment='great!', item=i)
+
+            r = Review(comment='great!', customer=c, item=i)
             db.session.add(r)
             db.session.commit()
 
@@ -41,8 +45,8 @@ class TestSerialization:
     def test_review_is_serializable(self):
         '''review is serializable'''
         with app.app_context():
-            c = Customer()
-            i = Item()
+            c = Customer(name='Phil')
+            i = Item(name='Insulated Mug', price=9.99)
             db.session.add_all([c, i])
             db.session.commit()
 
